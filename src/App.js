@@ -1,5 +1,7 @@
 
 import { useState, useRef, useEffect} from 'react';
+//const { ocrSpace } = require('ocr-space-api-wrapper');
+//import ocrSpace from 'ocr-space-api-wrapper'
 import Tesseract from 'tesseract.js';
 import './App.css';
 
@@ -26,7 +28,7 @@ function App() {
   const processData = () => {
   
     Tesseract.recognize(
-      imagePath,'eng',
+      imagePath,'esp',
       { 
         logger: m => console.log(m) 
       }
