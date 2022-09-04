@@ -1,6 +1,7 @@
 import { useState, useRef, useEffect} from 'react';
 import axios from 'axios';
 import { initializeApp } from 'firebase/app';
+import {getStorage, ref, uploadBytes } from 'firebase/storage'
 import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 import './App.css';
 
@@ -14,7 +15,35 @@ const firebaseConfig = {
   measurementId: "G-09T9RSBTRK"
 };
 
+const app = initializeApp(firebaseConfig)
+const storage = getStorage(app)
 
+
+
+ // const processData = () => {
+
+  //     let requestBody = {
+  //       base64image: imagePath,
+  //       FileType:'PNG'
+  //     }
+  //     let headers = {
+  //       apikey:'K89272055488957'
+        
+  //     }
+      
+  //     // connect with ocr-space ===================
+  //       console.log('requestBody: ',requestBody);
+  //       axios.post('https://api.ocr.space/parse/image', requestBody,{'headers':headers}    // parameters are url,body,headers
+        
+  //       ).then(function(response) {
+  //          let res = response.data;
+  //          console.log(res)
+  //          alert(res.IsErroredOnProcessing)
+  //          //console.log(res.ParsedResults[0].ParsedText);
+  //       }).catch(function (error) {
+  //          console.log(error);
+  //       });
+      // =========================================
 
 function App() {
   const [file, setFile] = useState(null);
@@ -22,6 +51,18 @@ function App() {
   const [textState, setTextState] = useState([]);
 
   const inputRef = useRef(null);
+  
+  
+  function uploadFile(file){
+    const storageRef = ref(storage,'images/nuevaImagen')
+    uploadBytes(storageRef,file).then((snapshot) => {
+      console.log('Uploaded a file:' + JSON.stringify(snapshot));
+    })
+  }
+
+  const processData = () => {
+    uploadFile(file)
+  }
 
   const resetFileInput = () => {
     // 👇️ reset input value
@@ -34,31 +75,8 @@ function App() {
     setFile(event.target.files[0])
   }
  
-  const processData = () => {
-
-      let requestBody = {
-        base64image: imagePath,
-        FileType:'PNG'
-      }
-      let headers = {
-        apikey:'K89272055488957'
-        
-      }
-      
-      // connect with ocr-space ===================
-        console.log('requestBody: ',requestBody);
-        axios.post('https://api.ocr.space/parse/image', requestBody,{'headers':headers}    // parameters are url,body,headers
-        
-        ).then(function(response) {
-           let res = response.data;
-           console.log(res)
-           alert(res.IsErroredOnProcessing)
-           //console.log(res.ParsedResults[0].ParsedText);
-        }).catch(function (error) {
-           console.log(error);
-        });
-      // ==========================================
-  }
+ 
+  
 
   const listaElementos = textState.map(data => {
     return(  <li>{data}</li>)
