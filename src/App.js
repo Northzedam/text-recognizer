@@ -101,16 +101,15 @@ function App() {
   return (
     <div className="App">
       <main className="App-main">
-        <h3>Lista de supermercado</h3>
+        <h3>Buscador de texto en imágenes</h3>
         <img style={{height:200,width:200}}  
            src={imagePath} className="App-image" alt="logo"/>
-        
-          <h3>Total en carrito</h3>
+        <input type='file' src="enviroment" accept="image/*" ref={inputRef} onChange={handleChange} />
+        <button onClick={processData} style={{height:50}}> convert to text</button>
+        <h3>Resultados</h3>
         <div className="text-box">
           <ul> {listaElementos} </ul>
         </div>
-        <input type='file' src="enviroment" accept="image/*" ref={inputRef} onChange={handleChange} />
-        <button onClick={processData} style={{height:50}}> convert to text</button>
       </main>
     </div>
   );
