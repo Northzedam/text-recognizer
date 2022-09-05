@@ -4,6 +4,8 @@ import { initializeApp } from 'firebase/app';
 import { getFirestore, collection, getDocs } from 'firebase/firestore/lite';
 import './App.css';
 
+
+
 const firebaseConfig = {
   apiKey: "AIzaSyAQGA8JTs96JulYAhxhn48vMFSYOTDiP34",
   authDomain: "basededatosjstest.firebaseapp.com",
@@ -30,38 +32,47 @@ function App() {
  
   const handleChange = (event) => {
     console.log('event',event)
-    setImagePath((URL.createObjectURL)(event.target.files[0]));
+    alert(JSON.stringify(event.target.files[0]))
+    //setImagePath((URL.createObjectURL)(event.target.files[0]));
     setFile(event.target.files[0])
+    console.log(event.target)
   }
  
   const processData = () => {
 
-      let requestBody = {
-        base64image: imagePath,
-        FileType:'PNG'
-      }
-      let headers = {
-        apikey:'K89272055488957'
+      var formData = new FormData();
+     // formData.append("base64image", imagePath);
+      formData.append("base64image", imagePath);
+      formData.append("language","eng");
+      formData.append("apikey","K89272055488957");
+      formData.append("isOverlayRequired", true);
+      console.log(formData);
+     
+        axios({
+          method: "post",
+          url: "https://api.ocr.space/parse/image",
+          data: formData,
+          headers: { "Content-Type": "multipart/form-data" ,"apikey":"K89272055488957"},
+        })
+          .then(function (response) {
+            //handle success
+            console.log(response);
+            //alert(file)
+            //alert(response.data.ParsedResults[0].ParsedText)
+            setTextState( arrayText => [ ...arrayText ,response.data.ParsedResults[0].ParsedText])
+          })
+          .catch(function (response) {
+            //handle error
+            console.log(response);
+            //alert(response)
+          });
         
-      }
-      
-      // connect with ocr-space ===================
-        console.log('requestBody: ',requestBody);
-        axios.post('https://api.ocr.space/parse/image', requestBody,{'headers':headers}    // parameters are url,body,headers
-        
-        ).then(function(response) {
-           let res = response.data;
-           console.log(res)
-           alert(res.IsErroredOnProcessing)
-           //console.log(res.ParsedResults[0].ParsedText);
-        }).catch(function (error) {
-           console.log(error);
-        });
+       
       // ==========================================
   }
 
   const listaElementos = textState.map(data => {
-    return(  <li>{data}</li>)
+    return(  <textarea style={{width:300}} key={textState.indexOf(data)}>{data}</textarea>)
   })
 
   useEffect(() => {
@@ -71,7 +82,7 @@ function App() {
       fileReader.onload = (e) => {
         const { result } = e.target;
         if (result && !isCancel) {
-          console.log('result',result)
+          //alert('result de fileReader es: ',result)
           setImagePath(result)
         }
       }
@@ -98,7 +109,7 @@ function App() {
         <div className="text-box">
           <ul> {listaElementos} </ul>
         </div>
-        <input type='file' src="enviroment" capture="camera" accept="image/*" ref={inputRef} onChange={handleChange} />
+        <input type='file' src="enviroment" accept="image/*" ref={inputRef} onChange={handleChange} />
         <button onClick={processData} style={{height:50}}> convert to text</button>
       </main>
     </div>
